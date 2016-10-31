@@ -10,19 +10,30 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
-  def index 
-    if params[:sort_by]
-      @sorting = params[:sort_by].to_s
-      @movies = Movie.order(@sorting)
+  def index
+    @movies = Movie.all
+    sort = params[:sort] || session[:sort] #Holds what is sent by the click. (Will use session later to hold cookies)
+    
+    if params[:sort] == "title" then
+      @title_header = "hilite"
+    else
+      @title_header = ""
+    end
+    if params[:sort] == "release_date" then
+      @release_date_header = "hilite"
+    else
+      @release_date_header = ""
+    end
+    
+    if params[:sort] != session[:sort] #Will use session here later
+      session[:sort] = sort
+      redirect_to :sort => sort and return #Will add ratings later
     else
       @movies = Movie.all
     end
-    #if params[:sort_by]
-    #  @sorting = params[:sort_by].to_s
-    #   @release_date = Release.order(@sorting)
-    #else
-    #  @release_date = Release.all
-    #end
+    
+    @movies = Movie.order(params[:sort]) #Where statement will be added later
+  
   end
 
   def new
